@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: payment-config
+data:
+  service-access-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NSb2xlIjoic2VydmljZSIsImlhdCI6MTY4MTE0OTMxMX0.zk0-ODNOz5ugnHkzRSlHcWlx-qPGSvVi7KkKG55bpLs
+  auth-service-base-url: http://auth-service:5001
+  order-service-base-url: http://order-service:5004
+  email-service-base-url: http://email-service:5007
+  stripe-secret-key: sk_test_51MxaKLKZrJuSt8aLPeYsaD0MOTM2ZNHP79T9Of66CzTNDvbQlJdEVON2o9Kcxbo1VQvqSiV74AzLcSSUEnpXbHwo00XbdQTEWu
+  stripe-webhook-secret: whsec_0e36518e5dade72c0d1f846e51a5167367f5bc3fe6ccfd06cfe757575f6b74a9
+  frontend-base-url: http://localhost:3000

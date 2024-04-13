@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-deployment
+  labels:
+    app: payment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment
+  template:
+    metadata:
+      labels:
+        app: payment
+    spec:
+      containers:
+        - name: payment
+          image: benukapunchihewa/payment-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5001
+          env:
+            - name: SERVICE_ACCESS_TOKEN
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-config
+                  key: service-access-token
+            - name: AUTH_SERVICE_BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-config
+                  key: auth-service-base-url
+            - name: ORDER_SERVICE_BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-config
+                  key: order-service-base-url
+            - name: EMAIL_SERVICE_BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-config
+                  key: email-service-base-url
+            - name: STRIPE_SECRET_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-config
+                  key: stripe-secret-key
+            - name: STRIPE_WEBHOOK_SECRET
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-config
+                  key: stripe-webhook-secret
+            - name: FRONTEND_BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: payment-config
+                  key: frontend-base-url
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-service
+spec:
+  type: NodePort
+  selector:
+    app: payment
+  ports:
+    - protocol: TCP
+      port: 5005
+      targetPort: 5001
+      nodePort: 30101
