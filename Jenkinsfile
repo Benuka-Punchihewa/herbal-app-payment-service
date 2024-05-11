@@ -2,12 +2,14 @@ pipeline {
     agent any
     stages{
         stage('Clone App'){
+            agent { label 'copper' }
             steps{
-                checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'github-credentials', url: 'git@github.com:Benuka-Punchihewa/herbal-app-payment-service.git']]])
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'github-credentials-copper', url: 'https://github.com/Benuka-Punchihewa/herbal-app-payment-service.git']]])
             }
         }
 
         stage('Build docker images'){
+            agent { label 'copper' }
             steps{
                 script{
                     dockerImage = docker.build("benukapunchihewa/payment-service:latest")
@@ -15,6 +17,7 @@ pipeline {
             }
         }
         stage('Push image to Hub'){
+            agent { label 'copper' }
             steps{
                 script{
                    withDockerRegistry([ credentialsId: "dockerHub", url: "" ]) {
@@ -24,9 +27,10 @@ pipeline {
             }
         }
         stage('Deploy to k8s') {
+            agent { label 'zink' }
             steps {
                 script {
-                    withKubeConfig([credentialsId: '68fa5218-2e07-4c4b-8cc6-2d2024ce171a', serverUrl: 'https://192.168.49.2:8443']) {
+                    withKubeConfig([credentialsId: 'google-cloud-service-account', serverUrl: 'https://104.196.35.11']) {
                         dir('kubernetes_config') {
                             sh 'kubectl apply -f payment-config.yaml'
                             sh 'kubectl apply -f payment.yaml'
